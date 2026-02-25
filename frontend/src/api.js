@@ -18,14 +18,19 @@ export const logViolation = (sessionId, reason) =>
 export const submitExam = (sessionId) => api.post(`/submit/${sessionId}`);
 
 // Admin
-const adminApi = axios.create({ baseURL: '/api/admin' });
+const adminApi = axios.create({ baseURL: API_URL ? `${API_URL}/api/admin` : '/api/admin' });
+
 export const adminVerify = (secret) =>
-  axios.post('/api/admin/verify', { secret });
+  api.post('/admin/verify', { secret });
+
 export const adminGetStudents = (secret) =>
   adminApi.get('/students', { headers: { 'x-admin-secret': secret } });
+
 export const adminGetViolations = (secret) =>
   adminApi.get('/violations', { headers: { 'x-admin-secret': secret } });
+
 export const adminGetAnswers = (secret, rollNumber) =>
   adminApi.get(`/answers/${rollNumber}`, { headers: { 'x-admin-secret': secret } });
+
 export const adminExportCSV = (secret) =>
-  `/api/admin/export-csv?secret=${secret}`;
+  `${API_URL}/api/admin/export-csv?secret=${secret}`;

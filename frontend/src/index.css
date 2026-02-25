@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html, body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #0d0c08;
+    color: #e8e4da;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5 {
+    font-family: 'Syne', sans-serif;
+  }
+  code, pre, .mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-amber-500 hover:bg-amber-400 text-ink-950 font-semibold px-6 py-3 rounded-lg transition-all duration-200 font-display text-sm tracking-wide disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply bg-ink-800 hover:bg-ink-700 text-ink-100 font-medium px-5 py-2.5 rounded-lg transition-all duration-200 text-sm border border-ink-600 disabled:opacity-50;
+  }
+  .card {
+    @apply bg-ink-900 border border-ink-700 rounded-xl p-6;
+  }
+  .input-field {
+    @apply w-full bg-ink-800 border border-ink-600 rounded-lg px-4 py-3 text-ink-100 placeholder-ink-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-colors text-sm;
+  }
+}
+
+/* Question number pill states */
+.q-gray { @apply bg-ink-700 text-ink-400; }
+.q-blue { @apply bg-blue-600 text-white ring-2 ring-blue-400; }
+.q-green { @apply bg-emerald-700 text-emerald-100; }
+.q-red { @apply bg-red-800 text-red-200; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #1a1710; }
+::-webkit-scrollbar-thumb { background: #4a4133; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #635843; }
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+
+@keyframes pulse-warn {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.pulse-warn { animation: pulse-warn 1s ease infinite; }

@@ -95,6 +95,7 @@ function startExamTimer(sessionId, startTime) {
 
 // Register student
 app.post('/api/register', async (req, res) => {
+  console.log('Register request:', req.body);
   try {
     const { name, year, section, rollNumber } = req.body;
     if (!name || !year || !section || !rollNumber) {
@@ -118,6 +119,7 @@ app.post('/api/register', async (req, res) => {
 
     res.json({ sessionId, rollNumber: student.rollNumber });
   } catch (err) {
+    console.error('Register error:', err);
     if (err.code === 11000) {
       return res.status(409).json({ error: 'You have already attempted the quiz.' });
     }

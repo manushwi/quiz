@@ -5,7 +5,8 @@ import {
   adminGetStudents,
   adminGetViolations,
   adminGetAnswers,
-  adminExportCSV
+  adminExportCSV,
+  getApiUrl
 } from '../api';
 
 export default function AdminPage() {
@@ -59,7 +60,9 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!authed) return;
-    const socket = io();
+    const socket = io(getApiUrl(), {
+      transports: ['websocket', 'polling']
+    });
     socketRef.current = socket;
     socket.emit('join:admin');
     socket.on('admin:update', () => loadData(sessionStorage.getItem('adminSecret')));

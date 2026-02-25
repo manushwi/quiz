@@ -13,11 +13,13 @@ const { executeCode } = require("./localRunner");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: '*', methods: ['GET', 'POST'] }
+  cors: { origin: '*', methods: ['GET', 'POST'] },
+  transports: ['websocket', 'polling']
 });
 
 app.use(cors());
 app.use(express.json({ limit: '2mb' }));
+app.set('trust proxy', 1);
 
 const EXAM_DURATION_MS = 60 * 60 * 1000; // 60 minutes
 const MAX_VIOLATIONS = 3;

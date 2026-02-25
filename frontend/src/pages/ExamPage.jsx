@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
-import { getQuestions, saveAnswer, logViolation, submitExam, getSession } from '../api';
+import { getQuestions, saveAnswer, logViolation, submitExam, getSession, getApiUrl } from '../api';
 import QuestionPanel from '../components/QuestionPanel';
 
 const TOTAL_QUESTIONS = 30;
@@ -34,7 +34,9 @@ export default function ExamPage() {
   // Socket.io
   useEffect(() => {
     if (!sessionId) { navigate('/'); return; }
-    const socket = io();
+    const socket = io(getApiUrl(), {
+      transports: ['websocket', 'polling']
+    });
     socketRef.current = socket;
     socket.emit('join:session', sessionId);
 
@@ -61,12 +63,22 @@ export default function ExamPage() {
           getSession(sessionId),
           getQuestions(sessionId)
         ]);
-        const remaining = sessionRes.data.timeRemaining;
-        if (remaining !== null) setTimeLeft(Math.max(0, Math.floor(remaining / 1000)));
-        setQuestions(questionsRes.data);
-        setVisited({ [questionsRes.data[0]?.id]: true });
+        
+        if (sessionRes?.data) {
+          const remaining = sessionRes.data.timeRemaining;
+          if (remaining !== undefined && remaining !== null) {
+            setTimeLeft(Math.max(0, Math.floor(remaining / 1000)));
+          }
+        }
+        
+        const qData = questionsRes?.data || [];
+        setQuestions(Array.isArray(qData) ? qData : []);
+        if (Array.isArray(qData) && qData.length > 0) {
+          setVisited({ [qData[0].id]: true });
+        }
         setLoading(false);
       } catch (err) {
+        console.error('Failed to load exam data:', err);
         if (err.response?.status === 403) {
           navigate('/submitted');
         } else {
@@ -154,7 +166,7 @@ export default function ExamPage() {
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibility);
-      window.removeEventListener('blur', handleBlur);
+      window.addEventListener('blur', handleBlur);
       document.removeEventListener('fullscreenchange', handleFullscreen);
       document.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('copy', handleCopy);
@@ -228,7 +240,7 @@ export default function ExamPage() {
     );
   }
 
-  const q = questions[currentQ];
+  const q = Array.isArray(questions) ? questions[currentQ] : null;
   const timeWarning = timeLeft < 300;
 
   return (
@@ -290,7 +302,7 @@ export default function ExamPage() {
             <div>
               <p className="text-xs font-mono text-blue-400 mb-2 uppercase tracking-wider">Section A — C</p>
               <div className="grid grid-cols-5 gap-1">
-                {questions.filter(q => q.section === 'C').map((q, i) => {
+                {Array.isArray(questions) && questions.filter(q => q.section === 'C').map((q, i) => {
                   const globalIndex = questions.indexOf(q);
                   const status = getQuestionStatus(q, globalIndex);
                   return (
@@ -310,7 +322,7 @@ export default function ExamPage() {
             <div>
               <p className="text-xs font-mono text-emerald-400 mb-2 uppercase tracking-wider">Section B — Python</p>
               <div className="grid grid-cols-5 gap-1">
-                {questions.filter(q => q.section === 'Python').map((q) => {
+                {Array.isArray(questions) && questions.filter(q => q.section === 'Python').map((q) => {
                   const globalIndex = questions.indexOf(q);
                   const status = getQuestionStatus(q, globalIndex);
                   return (
